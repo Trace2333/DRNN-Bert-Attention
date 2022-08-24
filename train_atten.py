@@ -31,7 +31,7 @@ epochs = 1
 evaluation_epochs = 1
 lr = 1e-3
 
-embedding_model = open("embedding.pkl", "rb")
+embedding_model = open("embedding_origin.pkl", "rb")
 matrix = dill.load(embedding_model)
 embedding_model.close()
 matrix = torch.tensor(matrix).to(device)
@@ -54,7 +54,7 @@ load_config(
     model, 
     target_path="/RNN_attention/",
     para_name="parameters_epoch_2.pth",
-    if_load=True
+    if_load_or_not=True
 )
 
 dataset_file = open("data_set.pkl", 'rb')
