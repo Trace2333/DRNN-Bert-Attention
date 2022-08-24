@@ -22,7 +22,7 @@ class DRNN(nn.Module):
         self.dropout = nn.Dropout(0.5)
         self.embw = nn.Parameter(embw)
         self.atten = SelfDotProductAttention(
-            input_size=inputsize,    #数据维度
+            input_size=hiddensize1,    #数据维度
             k_size=512,
             q_size=512,
             v_size=512,
@@ -37,8 +37,8 @@ class DRNN(nn.Module):
         if isinstance(inputs, tuple):
             x = nn.functional.embedding(torch.tensor(contextwin_2(inputs[0], 3), dtype=torch.long).to(device),
                                         self.embw).flatten(2)
-            x = self.atten(x)
             rnnout1, state1 = self.RNN1(x)
+            rnnout1 = self.atten(rnnout1)
             rnnout2, state2 = self.RNN2(rnnout1)
             y = self.Linear1(rnnout1)
             z = self.Linear2(rnnout2)

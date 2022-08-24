@@ -34,7 +34,7 @@ loss2 = 0
 loss = 0
 epochs = 1
 evaluation_epochs = 1
-lr = 1e-4
+lr = 1e-3
 
 embedding_model = open("./data/embedding.pkl", "rb")
 matrix = pickle.load(embedding_model)

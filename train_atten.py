@@ -7,7 +7,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from TorchsRNN import SrnnNet, RNNdataset, collate_fun2, DRNN, load_config
 from evalTools import acc_metrics, recall_metrics, f1_metrics
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
 
 wandb.login(host="http://47.108.152.202:8080",
             key="local-86eb7fd9098b0b6aa0e6ddd886a989e62b6075f0")
@@ -53,7 +53,7 @@ for i in model.modules():    # 参数初始化
 load_config(
     model, 
     target_path="/RNN_attention/",
-    para_name="parameters_epoch_2.pth",
+    para_name="parameters_epoch_1_1.pth",
     if_load_or_not=True
 )
 
@@ -119,7 +119,7 @@ for epoch in range(epochs):  # the length of padding is 128
         loss.backward()
         optimizer.step()
 
-torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_3.pth")
+torch.save(model.state_dict(), "./check_points/RNN_attention/parameters_epoch_2_1.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")
