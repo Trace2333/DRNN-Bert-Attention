@@ -53,7 +53,7 @@ for i in model.modules():    # 参数初始化
 load_config(
     model, 
     target_path="/RNN_attention/",
-    para_name="parameters_epoch_1_1.pth",
+    para_name="parameters_RNNhou_epoch_3_1.pth",
     if_load_or_not=True
 )
 
@@ -119,7 +119,7 @@ for epoch in range(epochs):  # the length of padding is 128
         loss.backward()
         optimizer.step()
 
-torch.save(model.state_dict(), "./check_points/RNN_attention/parameters_epoch_2_1.pth")
+torch.save(model.state_dict(), "./check_points/RNN_attention/parameters_RNNhou_epoch_4_1.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")

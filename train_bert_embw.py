@@ -32,7 +32,7 @@ hiden_size2 = 768
 loss1 = 0
 loss2 = 0
 loss = 0
-epochs = 1
+epochs = 3
 evaluation_epochs = 1
 lr = 1e-3
 
@@ -57,7 +57,7 @@ load_config(
     model, 
     target_path="/RNN_Bert_as_Embw/",
     para_name="parameters_epoch_1.pth",
-    if_load_or_not=True
+    if_load_or_not=False
 )
 
 dataset_file = open("data_set.pkl", 'rb')
@@ -129,7 +129,7 @@ for epoch in range(epochs):  # the length of padding is 128
                 wandb.log({f"{name} Grad_Value:" : torch.mean(parms.grad)})
         """
 
-torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_2.pth")
+torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_03.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")
