@@ -11,8 +11,17 @@ from torch.utils.data import DataLoader
 from TorchsRNN import RNNdataset, collate_fun2, DRNN, load_config
 from evalTools import acc_metrics, recall_metrics, f1_metrics
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-wandb.init()
-wandb.login("0be0c1cf934799d42fd8ab6bd84f1caf9ff9f890")
+
+
+wandb.login(host="http://47.108.152.202:8080",
+            key="local-86eb7fd9098b0b6aa0e6ddd886a989e62b6075f0")
+wandb.init(project="DRNN-Bert-embw")
+wandb.config = {
+  "learning_rate": 1e-3,
+  "epochs": 1,
+  "batch_size": 64
+}
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -25,7 +34,7 @@ loss2 = 0
 loss = 0
 epochs = 1
 evaluation_epochs = 1
-lr = 2e-3
+lr = 1e-4
 
 embedding_model = open("./data/embedding.pkl", "rb")
 matrix = pickle.load(embedding_model)
@@ -48,7 +57,7 @@ load_config(
     model, 
     target_path="/RNN_Bert_as_Embw/",
     para_name="parameters_epoch_1.pth",
-    if_load=True
+    if_load_or_not=True
 )
 
 dataset_file = open("data_set.pkl", 'rb')
@@ -120,7 +129,7 @@ for epoch in range(epochs):  # the length of padding is 128
                 wandb.log({f"{name} Grad_Value:" : torch.mean(parms.grad)})
         """
 
-torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_1.pth")
+torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_2.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")

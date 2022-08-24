@@ -132,3 +132,5 @@ dmypy.json
 *.log
 wandb/
 check_points
+*.rar
+*.zip
