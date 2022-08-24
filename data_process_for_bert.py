@@ -8,7 +8,6 @@ from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 device = torch.device('cuda')
 logging.basicConfig(level=logging.INFO,    # 输出INFO
                     format='%(asctime)s %(filename)s %(levelname)s %(message)s',
@@ -99,11 +98,11 @@ def generate_embedding(bert_filename, dataset):
         embw = np.array(torch.mean(embw, dim=1).cpu().detach(), dtype=np.float32)
         embedding[i] = embw
     embedding["[O]"] = np.array(torch.zeros([1, 768]).cpu().detach(), dtype=np.float32)
-    if os.path.exists(".\\data"):
-        with open(".\\data\\embedding.pkl", "wb") as f1:
+    if os.path.exists("./data"):
+        with open("./data/embedding.pkl", "wb") as f1:
             pickle.dump(embedding, f1)
             print("embedding.pkl Created!")
-        with open(".\\data\\dataset.pkl", "wb") as f2:
+        with open("./data/dataset.pkl", "wb") as f2:
             pickle.dump(out_dataset, f2)
             print("dataset.pkl, Created!")
 
@@ -123,7 +122,7 @@ def sentence_to_ids(data, dataset, targetname):
         for token in sen:
             sen_id.append(dataset[token])
         ids.append(sen_id)
-    with open(".\\data\\" + targetname, "wb") as f:
+    with open("./data/" + targetname, "wb") as f:
         pickle.dump(ids, f)
         print(targetname, "Created!")
 
@@ -136,8 +135,8 @@ def dict_to_list(input_dict):
 
 
 if __name__ == '__main__':
-    train_data, tag1 = get_list(".\\data\\trnTweet")
-    test_data, tag2 = get_list(".\\data\\testTweet")
+    train_data, tag1 = get_list("./data/trnTweet")
+    test_data, tag2 = get_list("./data/testTweet")
     splitted_train_sen = sen_to_list(train_data)
     splitted_test_sen = sen_to_list(test_data)
     splited_data = splitted_train_sen + splitted_test_sen
@@ -146,9 +145,9 @@ if __name__ == '__main__':
     dict = dict['words2idx']
     dataset = list(dict.keys())
     dataset_file.close()
-    generate_embedding("C:\\Users\\Trace\\Desktop\\Projects\\bert-base-uncased",
+    generate_embedding("/data1/trace/Projects/bert-base-uncased",
                        dataset)
-    with open(".\\data\\dataset.pkl", "rb") as f:
+    with open("./data/dataset.pkl", "rb") as f:
         dataset = pickle.load(f)
     sentence_to_ids(splitted_train_sen, dataset, "train.pkl")
     sentence_to_ids(splitted_test_sen, dataset, "test.pkl")

@@ -33,13 +33,6 @@ def acc_metrics(sentence_preds, y_labels):
     return Titems/Totalitems
 
 def recall_metrics(sentence_preds, y_labels):
-    """
-    计算recall值
-
-    :params sentence_pred:预测值，为tensor
-    :params y_labels:标签值，为tensor
-    :return:recall分数
-    """
     Titems = 0
     Fitems = 0
     Totalitems = 0
@@ -64,5 +57,4 @@ def recall_metrics(sentence_preds, y_labels):
     return Titems/Totalyitems
 
 def f1_metrics(precision, recall):
-
-    return (2*precision*recall)/(precision + recall + 0.001)    # 防止分母为0
+    return (2*precision*recall)/(precision + recall + 0.01)

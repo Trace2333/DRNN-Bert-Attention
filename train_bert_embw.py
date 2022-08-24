@@ -8,7 +8,7 @@ from tqdm import tqdm
 import numpy as np
 from data_process_for_bert import dict_to_list
 from torch.utils.data import DataLoader
-from TorchsRNN import RNNdataset, collate_fun2, DRNN
+from TorchsRNN import RNNdataset, collate_fun2, DRNN, load_config
 from evalTools import acc_metrics, recall_metrics, f1_metrics
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 wandb.init()
@@ -27,7 +27,7 @@ epochs = 1
 evaluation_epochs = 1
 lr = 2e-3
 
-embedding_model = open(".\\data\\embedding.pkl", "rb")
+embedding_model = open("./data/embedding.pkl", "rb")
 matrix = pickle.load(embedding_model)
 embedding_model.close()
 matrix = np.array(dict_to_list(matrix))
@@ -43,17 +43,13 @@ model = DRNN(inputsize=input_size,
              batchsize=batch_size,
              embw=matrix).to(device)
 
-for i in model.modules():    # 参数初始化
-    if isinstance(i, torch.nn.Linear):
-        torch.nn.init.xavier_normal_(i.weight, gain=10)
 
-if not os.path.exists(".\\check_points"):
-    os.mkdir(".\\check_points")
-check_point = '.\\check_points'
-if_load = True
-if os.path.exists(check_point + '\\DRNN_parms.pth') and if_load is True:    # 参数加载
-    model.load_state_dict(torch.load(check_point + '\\DRNN_parms.pth'))
-    print("Parms loaded!!!")
+load_config(
+    model, 
+    target_path="/RNN_Bert_as_Embw/",
+    para_name="parameters_epoch_1.pth",
+    if_load=True
+)
 
 dataset_file = open("data_set.pkl", 'rb')
 train, test, dict = dill.load(dataset_file)
@@ -124,7 +120,7 @@ for epoch in range(epochs):  # the length of padding is 128
                 wandb.log({f"{name} Grad_Value:" : torch.mean(parms.grad)})
         """
 
-torch.save(model.state_dict(), ".\\check_points\\DRNN_parms.pth")
+torch.save(model.state_dict(), "./check_points/RNN_Bert_as_Embw/parameters_epoch_1.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")

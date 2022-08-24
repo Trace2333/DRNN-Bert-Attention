@@ -1,7 +1,11 @@
+import os
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-import dill
+import pickle
+import numpy as np
+from data_process_for_bert import dict_to_list
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -21,6 +25,7 @@ class DRNN(nn.Module):
         self.Linear2 = nn.Linear(in_features=inchanle, out_features=outchanle2)
         self.dropout = nn.Dropout(0.5)
         self.embw = nn.Parameter(embw)    # self.register_parameter("wemb", nn.Parameter(self.embw))
+        self.weight_init()
 
     def forward(self, inputs):
         """前向计算"""
@@ -48,6 +53,12 @@ class DRNN(nn.Module):
     def init_state(self, batchsize):
         """提供零初始化"""
         return torch.zeros((1, batchsize, self.hiddensize))
+
+    def weight_init(self):
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.xavier_normal_(module.weight, gain=1)
+
 
 
 class Selectitem(nn.Module):
@@ -174,11 +185,11 @@ def padding_sentence(inputs):
     max_length = max(len(list(x)) for x in inputListY)
     return padding(inputListX, max_length), (padding(inputListY, max_length), padding(inputListZ, max_length))
 
-
-embedding_model = open("embedding.pkl", "rb")
-matrix = dill.load(embedding_model)
+embedding_model = open("./data/embedding.pkl", "rb")
+matrix = pickle.load(embedding_model)
+embedding_model.close()
+matrix = np.array(dict_to_list(matrix))
 matrix = torch.tensor(matrix)
-
 
 # When using given embedding
 def collate_fun1(batch_data):
@@ -319,3 +330,21 @@ def getKeyphraseList(l):
                 res.append(' '.join(now))
             now = []
     return set(res)
+
+
+def load_config(model, target_path, para_name, if_load):
+    """
+    读取对应的模型并装载
+    Args:
+        model: 模型
+        tagert_path: 目标路径，指的是在check_points之后的路径，
+        如"/RNN_attention/"
+        if_load: True/False
+    """
+    if not os.path.exists("./check_points"):
+        os.mkdir("./check_points")
+    check_point = './check_points'
+    if_load = True
+    if os.path.exists(check_point + target_path+ para_name) and if_load is True:    # 参数加载
+        model.load_state_dict(torch.load(check_point + target_path+ para_name))
+        print(para_name + " Parms loaded!!!")

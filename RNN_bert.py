@@ -21,7 +21,7 @@ class DRNNBert(nn.Module):
         self.Linear1 = nn.Linear(in_features=inchanle, out_features=outchanle1)
         self.Linear2 = nn.Linear(in_features=inchanle, out_features=outchanle2)
         self.dropout = nn.Dropout(0.5)
-        self.embw = Embw("C:\\Users\\Trace\\Desktop\\Projects\\bert-base-uncased")
+        self.embw = Embw("/data1/trace/Projects/bert-base-uncased")
         # self.register_parameter("wemb", nn.Parameter(self.embw))
 
     def forward(self, inputs):
