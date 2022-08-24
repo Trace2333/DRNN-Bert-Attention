@@ -42,6 +42,40 @@ class SelfDotProductAttention(nn.Module):
         return output
 
 
+class SelfDotMultiHeadAttention(nn.Module):
+    def __init__(self, input_size, k_size, q_size, v_size, h, dropout_rate):
+        """多头的每一个头保持相同的大小"""
+        super(SelfDotMultiHeadAttention, self).__init__()
+        self.h = h   # h表示头的数量
+        self.ks = []
+        self.vs = []
+        self.qs = []
+        for i in range(h):
+            self.ks.append(nn.Linear(input_size, k_size))
+            self.vs.append(nn.Linear(input_size, v_size))
+            self.qs[i] = nn.Linear(input_size, q_size)
+        self.out_fn = nn.Linear(v_size, input_size)
+        self.dropout = nn.Dropout(dropout_rate)
+
+
+    def forward(self, input_data):
+        k_matrixs = []
+        q_matrixs = []
+        v_matrixs = []
+        for i in self.h:
+
+
+
+    def weight_init(self):
+        for module_no in self.ks:
+            if isinstance(module_no, nn.Linear):
+                nn.init.xavier_normal_(module_no.weight, gain=1)
+        for module_no in self.vs:
+            if isinstance(module_no, nn.Linear):
+                nn.init.xavier_normal_(self.ks[module_no].weight, gain=1)
+        for module_no in self.qs:
+            if isinstance(module_no, nn.Linear):
+                nn.init.xavier_normal_(self.ks[module_no].weight, gain=1)
 
 
 if __name__ == '__main__':    # 测试
