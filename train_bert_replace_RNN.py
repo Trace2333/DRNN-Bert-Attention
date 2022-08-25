@@ -31,7 +31,7 @@ hiden_size2 = 768
 loss1 = 0
 loss2 = 0
 loss = 0
-epochs = 1
+epochs = 0
 evaluation_epochs = 1
 lr = 1e-3
 
@@ -129,7 +129,7 @@ for epoch in range(epochs):  # the length of padding is 128
         loss.backward()
         optimizer.step()
 
-torch.save(model.state_dict(), "./check_points/RNN_Bert_first_layer/DRNN_parms_epoch_1.pth")
+torch.save(model.state_dict(), "./check_points/RNN_Bert_first_layer/epoch_1.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")
@@ -141,8 +141,8 @@ for epoch in range(evaluation_epochs):
             sentence_preds = output1.argmax(axis=2)
             sequence_preds = output2.argmax(axis=2)
 
-            sen_acc = acc_metrics(sentence_preds, evaluation_input[1][0])    # 参数计算
-            seq_acc = acc_metrics(sequence_preds, evaluation_input[1][1])
+            sen_acc = acc_metrics(sentence_preds, evaluation_input[1])    # 参数计算
+            seq_acc = acc_metrics(sequence_preds, evaluation_input[2])
 
             wandb.log({"Sentence Precision": sen_acc})
             wandb.log({"Sequence Precision": seq_acc})

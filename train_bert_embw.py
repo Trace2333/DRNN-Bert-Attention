@@ -32,7 +32,7 @@ hiden_size2 = 768
 loss1 = 0
 loss2 = 0
 loss = 0
-epochs = 3
+epochs = 1
 evaluation_epochs = 1
 lr = 1e-3
 

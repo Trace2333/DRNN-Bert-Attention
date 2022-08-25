@@ -221,12 +221,13 @@ class DRNNBertReplaceRNN(nn.Module):
             z = self.Linear2(rnnout2)
             return y, z
         else:
-            x = nn.functional.embedding(torch.tensor(contextwin_2(inputs, 3), dtype=torch.int32).to(device),
-                                        self.embw).flatten(2)
-            x = self.dropout(x)
-            rnnout1, state1 = self.RNN1(x)
-            rnnout2, state2 = self.RNN2(rnnout1)
-            y = self.Linear1(rnnout1)
+            max_length = max(list(len(x.split()) for x in inputs))
+            tokenized_inputs = self.tokenizer(inputs, return_tensors='pt', truncation=True, max_length=max_length,
+                                              padding=True).to(device)
+            output1 = self.layer1(**tokenized_inputs)
+
+            rnnout2, state2 = self.RNN2(output1['last_hidden_state'])
+            y = self.Linear1(output1['last_hidden_state'])
             z = self.Linear2(rnnout2)
             return y, z
 
