@@ -5,13 +5,20 @@ import os
 import dill
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from TorchsRNN import SrnnNet, RNNdataset, collate_fun2, DRNN
+from TorchsRNN import SrnnNet, RNNdataset, collate_fun2, DRNN, load_config
 from evalTools import acc_metrics, recall_metrics, f1_metrics
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-wandb.init()
-wandb.login("0be0c1cf934799d42fd8ab6bd84f1caf9ff9f890")
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+wandb.login(host="http://47.108.152.202:8080",
+            key="local-86eb7fd9098b0b6aa0e6ddd886a989e62b6075f0")
+wandb.init(project="DRNN-Bert-embw")
+wandb.config = {
+  "learning_rate": 1e-3,
+  "epochs": 1,
+  "batch_size": 64
+}
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 batch_size = 64    # 基本参数
 input_size = 300
@@ -24,7 +31,7 @@ epochs = 1
 evaluation_epochs = 1
 lr = 1e-3
 
-embedding_model = open("embedding.pkl", "rb")
+embedding_model = open("embedding_origin.pkl", "rb")
 matrix = dill.load(embedding_model)
 embedding_model.close()
 matrix = torch.tensor(matrix).to(device)
@@ -39,16 +46,13 @@ model = DRNN(inputsize=input_size,
              batchsize=batch_size,
              embw=matrix).to(device)
 
-for i in model.modules():    # 参数初始化
-    if isinstance(i, torch.nn.Linear):
-        torch.nn.init.xavier_normal_(i.weight, gain=10)
 
-if not os.path.exists(".\\check_points"):
-    os.mkdir(".\\check_points")
-check_point = '.\\check_points'
-"""if os.path.exists(check_point + '\\DRNN_parms.pth'):    # 参数加载
-    model.load_state_dict(torch.load(check_point + '\\DRNN_parms.pth'))
-    print("Parms loaded!!!")"""
+load_config(
+    model, 
+    target_path="/RNN_original/",
+    para_name="epoch_1.pth",
+    if_load_or_not=False
+)
 
 dataset_file = open("data_set.pkl", 'rb')
 train, test, dict = dill.load(dataset_file)
@@ -119,7 +123,7 @@ for epoch in range(epochs):  # the length of padding is 128
                 wandb.log({f"{name} Grad_Value:" : torch.mean(parms.grad)})
         """
 
-torch.save(model.state_dict(), ".\\check_points\\DRNN_parms.pth")
+torch.save(model.state_dict(), "./check_points/RNN_original/epoch_1.pth")
 
 for epoch in range(evaluation_epochs):
     evaluation_iteration = tqdm(evaluation_loader, desc=f"EVALUATION on epoch {epoch + 1}")
